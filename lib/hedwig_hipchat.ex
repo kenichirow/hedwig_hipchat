@@ -34,9 +34,10 @@ defmodule Hedwig.Adapters.HipChat do
     {:noreply, state}
   end
 
-  def handle_cast({:reply, %{user: user, text: text} = msg}, %{conn: conn} = state) do
+  def handle_cast({:reply, %{user: user, text: text} = msg}, %{conn: conn, roster: roster} = state) do
     msg = romeo_message(msg)
-    Romeo.Connection.send(conn, %{msg | body: "#{user.name}: #{text}"})
+    mention_name = roster[user.jid]["mention_name"]
+    Romeo.Connection.send(conn, %{msg | body: "@#{mention_name} #{text}"})
     {:noreply, state}
   end
 
@@ -61,8 +62,15 @@ defmodule Hedwig.Adapters.HipChat do
       xml
       |> Romeo.XML.subelement("query")
       |> Romeo.XML.subelements("item")
-      |> Enum.map(&Romeo.XML.attr(&1, "jid"))
-      |> Enum.reduce(%{}, &(Map.put(&2, &1, %{})))
+      |> Enum.map(fn item ->
+          jid = Romeo.XML.attr(item, "jid")
+          %{jid =>
+            %{
+              "mention_name" => Romeo.XML.attr(item, "mention_name")
+            }
+          }
+         end)
+      |> Enum.reduce(%{}, &Map.merge(&2, &1))
 
     {:noreply, %{state | roster: roster}}
   end
