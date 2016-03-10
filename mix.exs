@@ -1,17 +1,17 @@
-defmodule HedwigXMPP.Mixfile do
+defmodule HedwigHipChat.Mixfile do
   use Mix.Project
 
-  @version "1.0.0-rc2"
+  @version "0.9.0"
 
   def project do
-    [app: :hedwig_xmpp,
-     name: "Hedwig XMPP",
+    [app: :hedwig_hipchat,
+     name: "Hedwig HipChat",
      version: @version,
      elixir: "~> 1.1",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      package: package,
-     description: "An XMPP adapter for Hedwig",
+     description: "A HipChat adapter for Hedwig",
      deps: deps]
   end
 
@@ -27,10 +27,10 @@ defmodule HedwigXMPP.Mixfile do
 
   defp package do
     [files: ["lib", "priv", "mix.exs", "README*", "readme*", "LICENSE*", "license*"],
-     maintainers: ["Sonny Scroggin"],
+     maintainers: ["Johan Wärlander"],
      licenses: ["MIT"],
      links: %{
-       "GitHub" => "https://github.com/hedwig-im/hedwig"
+       "GitHub" => "https://github.com/jwarlander/hedwig_hipchat"
      }]
   end
 end

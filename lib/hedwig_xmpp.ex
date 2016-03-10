@@ -1,4 +1,4 @@
-defmodule Hedwig.Adapters.XMPP do
+defmodule Hedwig.Adapters.HipChat do
   @moduledoc false
 
   use Hedwig.Adapter

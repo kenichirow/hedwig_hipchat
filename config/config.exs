@@ -10,11 +10,11 @@ use Mix.Config
 
 # You can configure for your application as:
 #
-#     config :hedwig_xmpp, key: :value
+#     config :hedwig_hipchat, key: :value
 #
 # And access this configuration in your application as:
 #
-#     Application.get_env(:hedwig_xmpp, :key)
+#     Application.get_env(:hedwig_hipchat, :key)
 #
 # Or configure a 3rd-party app:
 #

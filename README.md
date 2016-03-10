@@ -1,6 +1,7 @@
-# Hedwig XMPP Adapter
+# Hedwig HipChat Adapter
 
-> An XMPP Adapter for [Hedwig](https://github.com/hedwig-im/hedwig)
+> A HipChat Adapter for [Hedwig](https://github.com/hedwig-im/hedwig), based
+> on [Hedwig XMPP](https://github.com/hedwig-im/hedwig_xmpp)
 
 ## Getting started
 
@@ -34,20 +35,20 @@ Change into our new application directory:
 λ cd alfred
 ```
 
-Add `hedwig_xmpp` to your list of dependencies in `mix.exs`:
+Add `hedwig_hipchat` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [{:exml, github: "esl/exml"},
-   {:hedwig_xmpp, "~> 1.0.0-rc0"}]
+   {:hedwig_hipchat, "~> 0.9.0"}]
 end
 ```
 
-Ensure `hedwig_xmpp` is started before your application:
+Ensure `hedwig_hipchat` is started before your application:
 
 ```elixir
 def application do
-  [applications: [:hedwig_xmpp]]
+  [applications: [:hedwig_hipchat]]
 end
 ```
 
@@ -64,7 +65,7 @@ What would you like to name your bot?: alfred
 
 Available adapters
 
-1. Hedwig.Adapters.XMPP
+1. Hedwig.Adapters.HipChat
 2. Hedwig.Adapters.Console
 3. Hedwig.Adapters.Test
 
@@ -92,16 +93,16 @@ worker(Alfred.Robot, [])
 
 ### Configuration
 
-The next thing we need to do is configure our bot for our XMPP server. Open up
-`config/config.exs` and let's take a look at what was generated for us:
+The next thing we need to do is configure our bot for our HipChat server. Open
+up `config/config.exs` and let's take a look at what was generated for us:
 
 ```elixir
 use Mix.Config
 
 config :alfred, Alfred.Robot,
-  adapter: Hedwig.Adapters.XMPP,
+  adapter: Hedwig.Adapters.HipChat,
   name: "alfred",
-  aka: "/",
+  aka: "!",
   responders: [
     {Hedwig.Responders.Help, []},
     {Hedwig.Responders.Panzy, []},
@@ -111,24 +112,26 @@ config :alfred, Alfred.Robot,
 ```
 
 So we have the `adapter`, `name`, `aka`, and `responders` set. The `adapter` is
-the module responsible for handling all of the XMPP details like connecting and
-sending and receiving messages over the network. The `name` is the name that our
-bot will respond to. The `aka` (also known as) field is optional, but it allows
-us to address our bot with an alias. By default, this alias is set to `/`.
+the module responsible for handling all of the HipChat details like connecting
+and sending and receiving messages over the network. The `name` is the name
+that our bot will respond to. The `aka` (also known as) field is optional, but
+it allows us to address our bot with an alias. By default, this alias is set to
+`!` (since `/` is used by the HipChat client).
 
 Finally we have `responders`. Responders are modules that provide functions that
 match on the messages that get sent to our bot. We'll discuss this further in
 a bit.
 
-We'll need to provide a few more things in order for us to connect to our XMPP
-server. We'll need to provide our bot's `jid` and `password` as well as a list
-of rooms we want our bot to join once connected. Let's see what that looks like:
+We'll need to provide a few more things in order for us to connect to our
+HipChat server. We'll need to provide our bot's `jid` and `password` as well as
+a list of rooms we want our bot to join once connected. Let's see what that
+looks like:
 
 ```elixir
 use Mix.Config
 
 config :alfred, Alfred.Robot,
-  adapter: Hedwig.Adapters.XMPP,
+  adapter: Hedwig.Adapters.HipChat,
   name: "alfred",
   aka: "/",
   # fill in the appropriate jid for your bot
@@ -136,7 +139,7 @@ config :alfred, Alfred.Robot,
   # fill in the appropriate password for your bot
   password: "password",
   rooms: [
-    # fill in the appropriate rooms for your XMPP server
+    # fill in the appropriate rooms for your HipChat server
     {"lobby@conference.localhost", []}
   ],
   responders: [
@@ -156,7 +159,7 @@ the following:
 
 This will start our application along with our bot. Our bot should connect to
 the server and join the configured room(s). From there, we can connect with our
-favourite XMPP client and begin sending messages to our bot.
+favourite HipChat client and begin sending messages to our bot.
 
 Since we have the `Help` responder installed, we can say `alfred help` and we
 should see a list of usage for all of the installed responders.
@@ -168,6 +171,6 @@ details on writing responders and other exciting things!
 
 ## LICENSE
 
-Copyright (c) 2015, Sonny Scroggin.
+Copyright (c) 2015 Sonny Scroggin, Johan Wärlander.
 
-Hedwig XMPP source code is licensed under the [MIT License](https://github.com/hedwig-im/hedwig_xmpp/blob/master/LICENSE.md).
+Hedwig HipChat source code is licensed under the [MIT License](https://github.com/jwarlander/hedwig_hipchat/blob/master/LICENSE.md).
