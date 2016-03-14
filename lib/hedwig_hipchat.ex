@@ -6,6 +6,8 @@ defmodule Hedwig.Adapters.HipChat do
 
   require Logger
 
+  @ping_interval 120_000
+
   defmodule State do
     defstruct conn: nil,
               jid_mapping: %{},
@@ -20,6 +22,7 @@ defmodule Hedwig.Adapters.HipChat do
   def init({robot, opts}) do
     connection_opts = Keyword.put_new(opts, :nickname, opts[:name])
     {:ok, conn} = Romeo.Connection.start_link(connection_opts)
+    Process.send_after(self(), :ping, @ping_interval)
     {:ok, %State{conn: conn, opts: opts, robot: robot}}
   end
 
@@ -128,6 +131,14 @@ defmodule Hedwig.Adapters.HipChat do
 
     Hedwig.Robot.after_connect(robot)
 
+    {:noreply, state}
+  end
+
+  def handle_info(:ping, %{conn: conn } = state) do
+    Logger.debug fn -> "Pinging the server to keep connection alive" end
+    ping = Romeo.Stanza.iq("get", xmlel(name: "ping", attrs: [{"xmlns", ns_ping}]))
+    Romeo.Connection.send(conn, ping)
+    Process.send_after(self(), :ping, @ping_interval)
     {:noreply, state}
   end
 
