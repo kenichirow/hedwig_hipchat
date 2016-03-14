@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.11.4">
+    <title>Hedwig HipChat Adapter – Hedwig HipChat v0.9.0</title>
+    <link rel="stylesheet" href="dist/app-1e374caa3d.css" />
+    <script src="dist/sidebar_items.js"></script>
+  </head>
+  <body data-type="extras">
+
+<div class="main">
+<button class="sidebar-toggle">
+  <i class="icon-menu"></i>
+</button>
+<section class="sidebar">
+  <button class="sidebar-toggle">
+    <i class="icon-menu"></i>
+  </button>
+
+  
+  <a href="readme.html" class="sidebar-projectLink">
+    <div class="sidebar-projectDetails">
+      <h1 class="sidebar-projectName">
+        Hedwig HipChat
+      </h1>
+      <h2 class="sidebar-projectVersion">
+        v0.9.0
+      </h2>
+    </div>
+    
+  </a>
+
+  <div class="sidebar-search">
+    <i class="icon-search"></i>
+    <input type="text" class="sidebar-searchInput" placeholder="search" autocomplete="off" />
+  </div>
+
+  <ul class="sidebar-listNav">
+    <li><a id="extras-list" href="#full-list">Pages</a></li>
+
+    
+      <li><a id="modules-list" href="#full-list">Modules</a></li>
+    
+
+    
+
+    
+  </ul>
+
+  <ul id="full-list" class="sidebar-fullList"></ul>
+  <div class="sidebar-noResults"></div>
+</section>
+
+<section class="content">
+  <div id="content" class="content-inner">
+
+
+<h1>Hedwig HipChat Adapter</h1>
+<blockquote><p>A HipChat Adapter for <a href="https://github.com/hedwig-im/hedwig">Hedwig</a>, based
+on <a href="https://github.com/hedwig-im/hedwig_xmpp">Hedwig XMPP</a></p>
+</blockquote>
+<h2 id="getting-started"> Getting started</h2><p>Let’s generate a new Elixir application with a supervision tree:</p>
+<pre><code class="elixir">λ mix new alfred --sup
+* creating README.md
+* creating .gitignore
+* creating mix.exs
+* creating config
+* creating config/config.exs
+* creating lib
+* creating lib/alfred.ex
+* creating test
+* creating test/test_helper.exs
+* creating test/alfred_test.exs
+
+Your Mix project was created successfully.
+You can use &quot;mix&quot; to compile it, test it, and more:
+
+    cd alfred
+    mix test
+
+Run &quot;mix help&quot; for more commands.</code></pre>
+<p>Change into our new application directory:</p>
+<pre><code class="elixir">λ cd alfred</code></pre>
+<p>Add <code class="inline">hedwig_hipchat</code> to your list of dependencies in <code class="inline">mix.exs</code>:</p>
+<pre><code class="elixir">def deps do
+  [{:exml, github: &quot;esl/exml&quot;},
+   {:hedwig_hipchat, &quot;~&gt; 0.9.0&quot;}]
+end</code></pre>
+<p>Ensure <code class="inline">hedwig_hipchat</code> is started before your application:</p>
+<pre><code class="elixir">def application do
+  [applications: [:hedwig_hipchat]]
+end</code></pre>
+<h3>Generate our robot</h3>
+<pre><code class="elixir">λ mix deps.get
+λ mix hedwig.gen.robot
+
+Welcome to the Hedwig Robot Generator!
+
+Let&#39;s get started.
+
+What would you like to name your bot?: alfred
+
+Available adapters
+
+1. Hedwig.Adapters.HipChat
+2. Hedwig.Adapters.Console
+3. Hedwig.Adapters.Test
+
+Please select an adapter: 1
+
+* creating lib/alfred
+* creating lib/alfred/robot.ex
+* updating config/config.exs
+
+Don&#39;t forget to add your new robot to your supervision tree
+(typically in lib/alfred.ex):
+
+    worker(Alfred.Robot, [])</code></pre>
+<h3>Supervise our robot</h3>
+<p>We’ll want Alfred to be supervised and started when we start our application.
+Let’s add it to our supervision tree. Open up <code class="inline">lib/alfred.ex</code> and add the
+following to the <code class="inline">children</code> list:</p>
+<pre><code class="elixir">worker(Alfred.Robot, [])</code></pre>
+<h3>Configuration</h3>
+<p>The next thing we need to do is configure our bot for our HipChat server. Open
+up <code class="inline">config/config.exs</code> and let’s take a look at what was generated for us:</p>
+<pre><code class="elixir">use Mix.Config
+
+config :alfred, Alfred.Robot,
+  adapter: Hedwig.Adapters.HipChat,
+  name: &quot;alfred&quot;,
+  aka: &quot;/&quot;,
+  responders: [
+    {Hedwig.Responders.Help, []},
+    {Hedwig.Responders.Panzy, []},
+    {Hedwig.Responders.GreatSuccess, []},
+    {Hedwig.Responders.ShipIt, []}
+  ]</code></pre>
+<p>So we have the <code class="inline">adapter</code>, <code class="inline">name</code>, <code class="inline">aka</code>, and <code class="inline">responders</code> set. The <code class="inline">adapter</code> is
+the module responsible for handling all of the HipChat details like connecting
+and sending and receiving messages over the network. The <code class="inline">name</code> is the name
+that our bot will respond to, and <em>must be the bot account’s full name, exactly
+as registered in HipChat</em>. The <code class="inline">aka</code> (also known as) field is optional, but it
+allows us to address our bot with an alias. By default, this alias is set to
+<code class="inline">/</code>; <em>we’ll need to change that (since <code class="inline">/</code> is used by the HipChat client), so
+we’ll use <code class="inline">!</code> instead</em>.</p>
+<p>Finally we have <code class="inline">responders</code>. Responders are modules that provide functions that
+match on the messages that get sent to our bot. We’ll discuss this further in
+a bit.</p>
+<p>We’ll need to provide a few more things in order for us to connect to our
+HipChat server. We’ll need to provide our bot’s <code class="inline">jid</code> and <code class="inline">password</code> as well as
+a list of rooms we want our bot to join once connected.</p>
+<p>To find out your HipChat <code class="inline">jid</code>, go to <a href="https://your_org.hipchat.com/account/xmpp">https://your_org.hipchat.com/account/xmpp</a>,
+log in as the bot, and see <em>Account info / Jabber ID</em>.</p>
+<p>On the same page you’ll see the available rooms; combine the <em>XMPP/Jabber name</em>
+with the <em>Account info / Conference (MUC) domain</em> so that you get a full JID,
+like “12345_some_room@conf.hipchat.com”.</p>
+<p>Let’s see what this could look like:</p>
+<pre><code class="elixir">use Mix.Config
+
+config :alfred, Alfred.Robot,
+  adapter: Hedwig.Adapters.HipChat,
+  # HipChat is particular about using our registered name, exactly as is
+  name: &quot;Alfred&quot;,
+  # we needed to change this, remember?
+  aka: &quot;!&quot;,
+  # this is the Jabber ID from hipchat
+  jid: &quot;12345_123456@chat.hipchat.com&quot;,
+  # fill in the appropriate password for your bot
+  password: &quot;password&quot;,
+  rooms: [
+    # fill in the appropriate rooms for your HipChat server
+    {&quot;12345_some_room@conf.hipchat.com&quot;, []}
+  ],
+  responders: [
+    {Hedwig.Responders.Help, []},
+    {Hedwig.Responders.Panzy, []},
+    {Hedwig.Responders.GreatSuccess, []},
+    {Hedwig.Responders.ShipIt, []}
+  ]</code></pre>
+<p>Great! We’re ready to start our bot. From the root of our application, let’s run
+the following:</p>
+<pre><code class="elixir">λ mix run --no-halt</code></pre>
+<p>This will start our application along with our bot. Our bot should connect to
+the server and join the configured room(s). From there, we can connect with our
+favourite HipChat client and begin sending messages to our bot.</p>
+<p>Since we have the <code class="inline">Help</code> responder installed, we can say <code class="inline">Alfred help</code> (or the
+shorter version using our <code class="inline">aka</code>, <code class="inline">!help</code>) and we should see a list of usage for
+all of the installed responders.</p>
+<h2 id="what-s-next-"> What's next?</h2><p>Well, that’s it for now. Make sure to read the <a href="http://hexdocs.pm/hedwig">Hedwig Documentation</a> for more
+details on writing responders and other exciting things!</p>
+<h2 id="license"> LICENSE</h2><p>Copyright (c) 2015 Sonny Scroggin, Johan Wärlander.</p>
+<p>Hedwig HipChat source code is licensed under the <a href="https://github.com/jwarlander/hedwig_hipchat/blob/master/LICENSE.md">MIT License</a>.</p>
+
+    <footer class="footer">
+      <p>
+        <span class="line">
+          Built using
+          <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" rel="help" target="_blank">ExDoc</a> (v0.11.4),
+        </span>
+        <span class="line">
+          designed by
+          <a href="https://twitter.com/dignifiedquire" target="_blank" title="@dignifiedquire">Friedel Ziegelmayer</a>.
+          </span>
+      </p>
+      <button class="night-mode-toggle" />
+    </footer>
+  </div>
+</section>
+</div>
+  <script src="dist/app-6d2e071366.js"></script>
+  </body>
+</html>
+

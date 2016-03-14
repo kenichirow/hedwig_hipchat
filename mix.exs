@@ -2,17 +2,20 @@ defmodule HedwigHipChat.Mixfile do
   use Mix.Project
 
   @version "0.9.0"
+  @source_url "https://github.com/jwarlander/hedwig_hipchat"
 
   def project do
     [app: :hedwig_hipchat,
      name: "Hedwig HipChat",
+     source_url: @source_url,
      version: @version,
      elixir: "~> 1.1",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      package: package,
      description: "A HipChat adapter for Hedwig",
-     deps: deps]
+     deps: deps,
+     docs: [extras: ["README.md"], main: "readme"]]
   end
 
   def application do
@@ -22,7 +25,9 @@ defmodule HedwigHipChat.Mixfile do
   defp deps do
     [{:exml, github: "esl/exml"},
      {:hedwig, "~> 1.0.0-rc3"},
-     {:romeo, "~> 0.4"}]
+     {:romeo, "~> 0.4"},
+     {:earmark, "~> 0.1", only: :dev},
+     {:ex_doc, "~> 0.11", only: :dev}]
   end
 
   defp package do
@@ -30,7 +35,7 @@ defmodule HedwigHipChat.Mixfile do
      maintainers: ["Johan Wärlander"],
      licenses: ["MIT"],
      links: %{
-       "GitHub" => "https://github.com/jwarlander/hedwig_hipchat"
+       "GitHub" => @source_url
      }]
   end
 end
