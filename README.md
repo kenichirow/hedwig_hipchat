@@ -55,6 +55,7 @@ end
 ### Generate our robot
 
 ```
+λ mix deps.get
 λ mix hedwig.gen.robot
 
 Welcome to the Hedwig Robot Generator!
@@ -102,7 +103,7 @@ use Mix.Config
 config :alfred, Alfred.Robot,
   adapter: Hedwig.Adapters.HipChat,
   name: "alfred",
-  aka: "!",
+  aka: "/",
   responders: [
     {Hedwig.Responders.Help, []},
     {Hedwig.Responders.Panzy, []},
@@ -114,9 +115,11 @@ config :alfred, Alfred.Robot,
 So we have the `adapter`, `name`, `aka`, and `responders` set. The `adapter` is
 the module responsible for handling all of the HipChat details like connecting
 and sending and receiving messages over the network. The `name` is the name
-that our bot will respond to. The `aka` (also known as) field is optional, but
-it allows us to address our bot with an alias. By default, this alias is set to
-`!` (since `/` is used by the HipChat client).
+that our bot will respond to, and _must be the bot account's full name, exactly
+as registered in HipChat_. The `aka` (also known as) field is optional, but it
+allows us to address our bot with an alias. By default, this alias is set to
+`/`; _we'll need to change that (since `/` is used by the HipChat client), so
+we'll use `!` instead_.
 
 Finally we have `responders`. Responders are modules that provide functions that
 match on the messages that get sent to our bot. We'll discuss this further in
@@ -124,23 +127,33 @@ a bit.
 
 We'll need to provide a few more things in order for us to connect to our
 HipChat server. We'll need to provide our bot's `jid` and `password` as well as
-a list of rooms we want our bot to join once connected. Let's see what that
-looks like:
+a list of rooms we want our bot to join once connected.
+
+To find out your HipChat `jid`, go to https://your_org.hipchat.com/account/xmpp,
+log in as the bot, and see _Account info / Jabber ID_.
+
+On the same page you'll see the available rooms; combine the _XMPP/Jabber name_
+with the _Account info / Conference (MUC) domain_ so that you get a full JID,
+like "12345_some_room@conf.hipchat.com".
+
+Let's see what this could look like:
 
 ```elixir
 use Mix.Config
 
 config :alfred, Alfred.Robot,
   adapter: Hedwig.Adapters.HipChat,
-  name: "alfred",
-  aka: "/",
-  # fill in the appropriate jid for your bot
-  jid: "alfred@localhost",
+  # HipChat is particular about using our registered name, exactly as is
+  name: "Alfred",
+  # we needed to change this, remember?
+  aka: "!",
+  # this is the Jabber ID from hipchat
+  jid: "12345_123456@chat.hipchat.com",
   # fill in the appropriate password for your bot
   password: "password",
   rooms: [
     # fill in the appropriate rooms for your HipChat server
-    {"lobby@conference.localhost", []}
+    {"12345_some_room@conf.hipchat.com", []}
   ],
   responders: [
     {Hedwig.Responders.Help, []},
@@ -161,8 +174,9 @@ This will start our application along with our bot. Our bot should connect to
 the server and join the configured room(s). From there, we can connect with our
 favourite HipChat client and begin sending messages to our bot.
 
-Since we have the `Help` responder installed, we can say `alfred help` and we
-should see a list of usage for all of the installed responders.
+Since we have the `Help` responder installed, we can say `Alfred help` (or the
+shorter version using our `aka`, `!help`) and we should see a list of usage for
+all of the installed responders.
 
 ## What's next?
 
