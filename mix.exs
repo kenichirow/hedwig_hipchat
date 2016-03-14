@@ -1,7 +1,7 @@
 defmodule HedwigHipChat.Mixfile do
   use Mix.Project
 
-  @version "0.9.2"
+  @version "0.9.3"
   @source_url "https://github.com/jwarlander/hedwig_hipchat"
 
   def project do
