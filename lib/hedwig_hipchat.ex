@@ -14,7 +14,8 @@ defmodule Hedwig.Adapters.HipChat do
               opts: nil,
               robot: nil,
               rooms: [],
-              roster: []
+              roster: [],
+              ping_id: nil
   end
 
   ## Callbacks
@@ -22,7 +23,7 @@ defmodule Hedwig.Adapters.HipChat do
   def init({robot, opts}) do
     connection_opts = Keyword.put_new(opts, :nickname, opts[:name])
     {:ok, conn} = Romeo.Connection.start_link(connection_opts)
-    Process.send_after(self(), :ping, @ping_interval)
+    Process.send_after(self(), :send_ping, @ping_interval)
     {:ok, %State{conn: conn, opts: opts, robot: robot}}
   end
 
@@ -115,6 +116,11 @@ defmodule Hedwig.Adapters.HipChat do
     {:noreply, state}
   end
 
+  def handle_info({:stanza, %IQ{id: id}}, %{ping_id: id} = state) do
+    Logger.debug("Received pong from the server")
+    {:noreply, %{state | ping_id: nil}}
+  end
+
   def handle_info({:resource_bound, resource}, %{robot: robot, opts: opts} = state) do
     Hedwig.Robot.register(robot, opts[:name])
     {:noreply, state}
@@ -134,12 +140,13 @@ defmodule Hedwig.Adapters.HipChat do
     {:noreply, state}
   end
 
-  def handle_info(:ping, %{conn: conn } = state) do
+  def handle_info(:send_ping, %{conn: conn } = state) do
     Logger.debug fn -> "Pinging the server to keep connection alive" end
-    ping = Romeo.Stanza.iq("get", xmlel(name: "ping", attrs: [{"xmlns", ns_ping}]))
-    Romeo.Connection.send(conn, ping)
-    Process.send_after(self(), :ping, @ping_interval)
-    {:noreply, state}
+    stanza = Romeo.Stanza.iq("get", xmlel(name: "ping", attrs: [{"xmlns", ns_ping}]))
+    id = Romeo.XML.attr(stanza, "id")
+    Romeo.Connection.send(conn, stanza)
+    Process.send_after(self(), :send_ping, @ping_interval)
+    {:noreply, %{state | ping_id: id}}
   end
 
   def handle_info(msg, state) do
