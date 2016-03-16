@@ -167,6 +167,7 @@ defmodule Hedwig.Adapters.HipChat do
           |> Enum.at(0)
           |> Romeo.XML.subelement("item")
           |> Romeo.XML.attr("jid")
+          |> Romeo.JID.bare()
         catch
           _ -> nil
         end
