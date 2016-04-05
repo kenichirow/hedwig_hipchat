@@ -23,8 +23,8 @@ defmodule HedwigHipChat.Mixfile do
   end
 
   defp deps do
-    [{:exml, github: "esl/exml"},
-     {:hedwig, "~> 1.0.0-rc3"},
+    [{:exml, github: "paulgray/exml", override: true},
+     {:hedwig, github: "hedwig-im/hedwig"},
      {:romeo, "~> 0.4"},
      {:earmark, "~> 0.1", only: :dev},
      {:ex_doc, "~> 0.11", only: :dev}]

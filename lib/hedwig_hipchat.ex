@@ -248,7 +248,6 @@ defmodule Hedwig.Adapters.HipChat do
     {room, user} = extract_room_and_user(msg, mapping)
 
     %Hedwig.Message{
-      adapter: {__MODULE__, self},
       ref: make_ref(),
       room: room,
       text: body,

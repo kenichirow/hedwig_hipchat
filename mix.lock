@@ -1,7 +1,7 @@
 %{"connection": {:hex, :connection, "1.0.2"},
   "earmark": {:hex, :earmark, "0.2.1"},
   "ex_doc": {:hex, :ex_doc, "0.11.4"},
-  "exml": {:git, "https://github.com/esl/exml.git", "d7b745fa89389b53706a07f33775f1f814c66cb4", []},
+  "exml": {:git, "https://github.com/paulgray/exml.git", "d04d0dfc956bd2bf5d9629a7524c6840eb02df28", []},
   "gproc": {:hex, :gproc, "0.5.0"},
-  "hedwig": {:hex, :hedwig, "1.0.0-rc3"},
+  "hedwig": {:git, "https://github.com/hedwig-im/hedwig.git", "18273f14fb8a6d5869551f0c7a3d2eebb2b3662a", []},
   "romeo": {:hex, :romeo, "0.4.0"}}
