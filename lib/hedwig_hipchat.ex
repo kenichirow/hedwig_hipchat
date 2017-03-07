@@ -99,9 +99,10 @@ defmodule Hedwig.Adapters.HipChat do
   end
 
   def handle_info({:stanza, %Message{} = msg}, %{robot: robot, opts: opts} = state) do
-    unless from_self?(msg, opts[:name]) do
-      Hedwig.Robot.handle_message(robot, hedwig_message(msg, state.jid_mapping))
-    end
+    Hedwig.Robot.handle_in(robot, hedwig_message(msg, robot, state.jid_mapping))
+    # unless from_self?(msg, opts[:name]) do
+    #   Hedwig.Robot.handle_in(robot, hedwig_message(msg, state.jid_mapping))
+    # end
     {:noreply, state}
   end
 
@@ -122,7 +123,6 @@ defmodule Hedwig.Adapters.HipChat do
   end
 
   def handle_info({:resource_bound, resource}, %{robot: robot, opts: opts} = state) do
-    Hedwig.Robot.register(robot, opts[:name])
     {:noreply, state}
   end
 
@@ -135,7 +135,7 @@ defmodule Hedwig.Adapters.HipChat do
     |> send_presence(opts)
     |> join_rooms(opts)
 
-    Hedwig.Robot.after_connect(robot)
+    Hedwig.Robot.handle_connect(robot)
 
     {:noreply, state}
   end
@@ -244,11 +244,12 @@ defmodule Hedwig.Adapters.HipChat do
   end
   defp from_self?(_, _), do: false
 
-  defp hedwig_message(%Message{body: body, type: type} = msg, mapping) do
+  defp hedwig_message(%Message{body: body, type: type} = msg, robot, mapping) do
     {room, user} = extract_room_and_user(msg, mapping)
 
     %Hedwig.Message{
       ref: make_ref(),
+      robot: robot,
       room: room,
       text: body,
       type: type,

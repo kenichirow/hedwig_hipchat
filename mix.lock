@@ -1,7 +1,9 @@
-%{"connection": {:hex, :connection, "1.0.2", "f4a06dd3ecae4141aa66f94ce92ea4c4b8753069472814932f1cadbc3078ab80", [:mix], []},
+%{"connection": {:hex, :connection, "1.0.4", "a1cae72211f0eef17705aaededacac3eb30e6625b04a6117c1b2db6ace7d5976", [:mix], []},
   "earmark": {:hex, :earmark, "0.2.1", "ba6d26ceb16106d069b289df66751734802777a3cbb6787026dd800ffeb850f3", [:mix], []},
   "ex_doc": {:hex, :ex_doc, "0.11.4", "a064bdb720594c3745b94709b17ffb834fd858b4e0c1f48f37c0d92700759e02", [:mix], [{:earmark, "~> 0.1.17 or ~> 0.2", [hex: :earmark, optional: true]}]},
   "exml": {:git, "https://github.com/paulgray/exml.git", "d04d0dfc956bd2bf5d9629a7524c6840eb02df28", []},
+  "fast_xml": {:hex, :fast_xml, "1.1.20", "bf787d19ce59f079e574503be69b4cd88a91a2e0384baa5933c38b16a2e4ba78", [:rebar3], [{:p1_utils, "1.0.6", [hex: :p1_utils, optional: false]}]},
   "gproc": {:hex, :gproc, "0.5.0", "2df2d886f8f8a7b81a4b04aa17972b5965bbc5bf0100ea6d8e8ac6a0e7389afe", [:rebar], []},
-  "hedwig": {:git, "https://github.com/hedwig-im/hedwig.git", "2cf3ad2b881bdb81e7b2754d70ba1904e5c7a83e", []},
-  "romeo": {:hex, :romeo, "0.4.0", "ace7cd6e13fed9557ece9e4dae8d5e0dd6a17144264c4467c3e4ad2e2bd0e94a", [:mix], [{:connection, "~> 1.0", [hex: :connection, optional: false]}]}}
+  "hedwig": {:hex, :hedwig, "1.0.0", "effbb160b9b270cb62ac1b2d6041b4ac731a21b0fc048dd2c35840245fdc0f22", [:mix], []},
+  "p1_utils": {:hex, :p1_utils, "1.0.6", "ef0951ddf38e92b7e479af4b8dc950df76af8c1030432ef68b7fd7ad17c436fe", [:rebar3], []},
+  "romeo": {:hex, :romeo, "0.7.0", "17e46830e49eff4d70e59147e808cd3f5f79912bb90a006afe5a8bb4355c29b3", [:mix], [{:connection, "~> 1.0", [hex: :connection, optional: false]}, {:fast_xml, "~> 1.1", [hex: :fast_xml, optional: false]}]}}
