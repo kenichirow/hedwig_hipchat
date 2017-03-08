@@ -12,9 +12,9 @@ defmodule HedwigHipChat.Mixfile do
      elixir: "~> 1.4",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
-     package: package,
+     package: package(),
      description: "A HipChat adapter for Hedwig",
-     deps: deps,
+     deps: deps(),
      docs: [extras: ["README.md"], main: "readme"]]
   end
 
